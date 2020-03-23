@@ -1,0 +1,103 @@
+# Therapeutic Touch
+
+This is an example from Kruschke(2015)[^1], section 9.2.4. The model is implemented in JAGS in the book. 
+
+```{r echo=TRUE, message=FALSE, results=FALSE}
+library(nimble)
+library(dplyr)
+library(coda)
+source("DBDA2E-utilities.R")
+```
+
+Practitioners of the therapeutic touch claim that they can sense people's "energy field." Rosa et al. (1998)[^2] investigaed this claim via an experiment. The experimenter chose one of the practitioner's hands randomly on each trial and approached it. Data were collected on whether or not a practitioner was able to sense which of their hands was approached. 
+
+The data are shown below. The column `s` contains the identifiers of the practitioners. There were 21 practitioners tested and 7 of them were tested twice. However, retests were counted as separate from the authors, yielding to 28 subjcets in total. The column `y` contains the outcomes, with $1$ meaning that the practitioner answered correctly the hand being approached and $0$ meaning that the practitioner gave the wrong answer. Each practitioner was tested 10 times.
+
+```{r}
+dataTouch <- read.csv('TherapeuticTouchData.csv')
+dataTouch <- mutate(dataTouch, s = as.numeric(dataTouch$s))
+head(dataTouch)
+```
+
+The data is modeled with a hierarchical model. The probability each subject answers a question correctly is modeled with a bernoulli distribution, with the parameters $\theta_1$, ... $\theta_{28}$, respectively. The $\theta$'s are assumed to come from a Beta($\omega(\kappa-2)+1,~ (1-\omega)(\kappa-2)+1$) distribution. The parameter $\omega$ represents the mode of the distribution, and can be interepreted as an estimate of the correction rate of the whole group of practitioners. It is assumed to have a Beta prior. The $\kappa$ parameter quantifies the prior certainty regarding the dependence of the probabitilies $\theta$'s on $\omega$. A Gamma prior is put on $\kappa-2$. The following code specifies these assumptions.
+
+```{r}
+## modelCode
+code <- nimbleCode({
+  omega ~ dbeta(1, 1)  
+  kappaMinusTwo ~ dgamma(0.01, 0.01)
+  kappa <- kappaMinusTwo + 2
+  for (i in 1:nSubj){
+    theta[i] ~ dbeta( omega*(kappa-2)+1, (1-omega)*(kappa-2)+1 )
+  }
+  for (i in 1:nTotal){
+    y[i] ~ dbern(theta[s[i]])
+  }
+})
+
+## define additional information needed for the model
+
+nSubj <- length(unique(dataTouch$s)) # number of subjects
+thetaInits <- rep(0, nSubj) # initial values of theta
+for (i in 1:nSubj){
+  thetaInits[i] <- filter(dataTouch, s == i)$y %>% mean()
+}
+meanThetaInits <- mean(thetaInits) # initial value of omega
+kappaInit <- 100 # initial value of kappa
+
+## data
+data <- list(y = dataTouch$y)
+
+## constants of the model (e.g. number of observations, fixed values)
+consts <- list(s = dataTouch$s, nTotal = nrow(dataTouch), nSubj = nSubj)
+
+## values to initialize the algorithm
+inits <- list(theta = thetaInits, omega = meanThetaInits,
+              kappaMinusTwo = kappaInit - 2) 
+```
+
+```{r}
+## fast use of NIMBLE (one-line invocation)
+mcmcOut <- nimbleMCMC(code = code, constants = consts,
+						data = data, inits = inits,
+						niter = 20000, nburnin = 2000, thin = 10, nchains = 1, 
+						monitors = c('theta', 'omega', 'kappa'))
+```
+
+```{r}
+## convert posterior samples to mcmc object
+mcmcCoda <- as.mcmc(mcmcOut)
+```
+
+### Results
+
+```{r echo=FALSE}
+par(mfrow=c(3,2))
+plot(mcmcOut[, c('kappa')], type = "l", main = "Traceplot of kappa")
+plot(mcmcOut[, c('omega')], type = "l", main = "Traceplot of omega")
+plot(mcmcOut[, c('theta[1]')], type = "l", main = "Traceplot of theta1")
+plot(mcmcOut[, c('theta[14]')], type = "l", main = "Traceplot of theta14")
+plot(mcmcOut[, c('theta[28]')], type = "l", main = "Traceplot of theta28")
+```
+
+```{r echo=FALSE, results='hide'}
+plotPost(mcmcCoda[, c('kappa')], xlab = c('kappa'), main = 'Marginal posterior of kappa')
+```
+
+
+```{r echo=FALSE,results='hide'}
+plotPost(mcmcCoda[, c('omega')], xlab = c('omega'), main = 'Marginal posterior of omega')
+```
+
+The 95% HDI of $\omega$ contains value 0.5, encoding guessing by chance, so the group of practitioners as a whole cannot be said to be able to sense people's "energy field."
+
+```{r echo=FALSE, message=FALSE, results='hide'}
+par(mfrow=c(1,2))
+plotPost(mcmcCoda[, c('theta[1]')], xlab = c("theta1"), main = 'Marginal posterior of theta1')
+plotPost(mcmcCoda[, c('theta[28]')], xlab = c("theta28"), main = 'Marginal posterior of theta28')
+```
+
+These are the posterior distributions of $\theta_1$ (which corresponds to the practitioner that has the worst performance), and $\theta_{28}$ (the best practitioner). The value 0.5 is in both HDI's, so it cannot be concluded that any of the pracitioners is able to sense people's "energy field."
+
+[^1]: Kruschke, J.K.,2015. Doing Bayesian data analysis: a tutorial with R, JAGS, and stan. 2E [edition]. Academic Press.
+[^2]: Rosa, L., Rosa, E., Sarner, L., & Barrett, S. (1998). A close look at therapeutic touch. *Jounal of the American Medical Association*, 279(13), 1005-1010.
