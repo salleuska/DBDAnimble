@@ -1,0 +1,94 @@
+## Doing Bayesian Analysis   - Jhon Kruschke
+ 
+
+## Sec. 8.2. Beta-binomial
+Coin example
+Jags-ExampleScript.R
+
+## Sec. 9.1/9.2 - Hierarchical model (extending beta-binomial)
+SINGLE/MULTIPLE COINS FROM A SINGLE MINT (example: Therapeutic touch)
+
+Jags-Ydich- XnomSsubj-MbernBetaOmegaKappa-Example.R
+Jags-Ydich- XnomSsubj-MbernBetaOmegaKappa.R
+
+## Sec. 9.5.1. - Hierarchical model (two levels extending beta-binomial)
+Example: Baseball batting abilities by position
+Jags-Ybinom-XnomSsubjCcat-MbinomBetaOmegaKappa.R
+
+-------------------------------------------------------------------------------------
+### Sec 16.1. ESTIMATING THE MEAN AND STANDARD DEVIATION OF A NORMAL DISTRIBUTION
+
+Jags-Ymet-Xnom1grp-Mnormal-Example.R
+
+### Sec 16.2.1. Robust density estimation  - Using the t distribution in JAGS
+
+Jags-Ymet-Xnom1grp-Mrobust-Example.R 
+
+### Sec 16.3  - Two groups (?)
+
+
+### Sec 17.2 Robust linear regression - Simulation 
+
+Jags-Ymet-Xmet-Mrobust-Example.R
+Jags-Ymet-Xmet-Mrobust.R
+
+### Sec 17.2 Robust linear regression - Simulation 
+
+Jags-Ymet-Xmet-Mrobust-Example.R
+Jags-Ymet-Xmet-Mrobust.R
+
+### Sec 17.3. HIERARCHICAL REGRESSION ON INDIVIDUALS WITHIN GROUPS
+- reading-ability scores of children across several years.
+
+Jags-Ymet-XmetSsubj-MrobustHier-Example.R
+Jags-Ymet-XmetSsubj-MrobustHier.R
+
+Quadratic version
+
+Jags-Ymet-XmetSsubj-MrobustHierQuadWt-Example.R 
+Jags-Ymet-XmetSsubj-MrobustHierQuadWt.R
+
+### Sec 18.1. Multiple Linear Regression
+- predict a state’s average high-school SAT score on the basis of the amount of money the state spends per pupil.
+
+- example with only main effects and interactions
+Jags-Ymet-XmetMulti-Mrobust-Example.R
+Jags-Ymet-XmetMulti-Mrobust.R
+
+
+-- version with shrinkage on coefficient
+Jags-Ymet-XmetMulti-MrobustShrink-Example.R 
+Jags-Ymet-XmetMulti-MrobustShrink.R
+
+-- variable selection ( I can do it and compare it with rjmcmc)
+Jags-Ymet-XmetMulti-MrobustVarSelect-Example.R
+Jags-Ymet-XmetMulti-MrobustVarSelect.R
+
+
+### Sec 19.3.2. ANOVA
+- Example: Sex and death
+Jags-Ymet-Xnom1fac-MnormalHom-Example.R
+Jags-Ymet-Xnom1fac-MnormalHom.R
+
+# Sec 19.4.1 including a metric predictor
+Jags-Ymet-Xnom1met1-MnormalHom-Example.R
+Jags-Ymet-Xnom1met1-MnormalHom.R
+
+
+# Sec 19.5.1 - Robust version (T student)
+simulated data
+Jags-Ymet-Xnom1fac-MrobustHet-Example.R 
+Jags-Ymet-Xnom1fac-MrobustHet.R
+
+### Sec 20.2.1.
+Jags-Ymet-Xnom2fac-MnormalHom-Example.R
+Jags-Ymet-Xnom2fac-MnormalHom.R
+
+
+### Sec 21.1.1 Dichotmous prediction (logistic regression)
+
+
+# Sec 21.2.1 example height, weight, gender
+Jags-Ydich-XmetMulti-Mlogistic-Example.R 
+Jags-Ydich-XmetMulti-Mlogistic.R 
+
