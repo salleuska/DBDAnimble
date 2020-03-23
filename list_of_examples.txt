@@ -8,8 +8,8 @@ Jags-ExampleScript.R
 ## Sec. 9.1/9.2 - Hierarchical model (extending beta-binomial)
 SINGLE/MULTIPLE COINS FROM A SINGLE MINT (example: Therapeutic touch)
 
-Jags-Ydich- XnomSsubj-MbernBetaOmegaKappa-Example.R
-Jags-Ydich- XnomSsubj-MbernBetaOmegaKappa.R
+Jags-Ydich-XnomSsubj-MbernBetaOmegaKappa-Example.R
+Jags-Ydich-XnomSsubj-MbernBetaOmegaKappa.R
 
 ## Sec. 9.5.1. - Hierarchical model (two levels extending beta-binomial)
 Example: Baseball batting abilities by position
@@ -32,7 +32,7 @@ Jags-Ymet-Xnom1grp-Mrobust-Example.R
 Jags-Ymet-Xmet-Mrobust-Example.R
 Jags-Ymet-Xmet-Mrobust.R
 
-### Sec 17.2 Robust linear regression - Simulation 
+# Sec 17.2 Robust linear regression - Simulation 
 
 Jags-Ymet-Xmet-Mrobust-Example.R
 Jags-Ymet-Xmet-Mrobust.R
@@ -60,7 +60,7 @@ Jags-Ymet-XmetMulti-Mrobust.R
 Jags-Ymet-XmetMulti-MrobustShrink-Example.R 
 Jags-Ymet-XmetMulti-MrobustShrink.R
 
--- variable selection ( I can do it and compare it with rjmcmc)
+-- variable selection
 Jags-Ymet-XmetMulti-MrobustVarSelect-Example.R
 Jags-Ymet-XmetMulti-MrobustVarSelect.R
 
@@ -89,6 +89,7 @@ Jags-Ymet-Xnom2fac-MnormalHom.R
 
 
 # Sec 21.2.1 example height, weight, gender
+
 Jags-Ydich-XmetMulti-Mlogistic-Example.R 
 Jags-Ydich-XmetMulti-Mlogistic.R 
 
