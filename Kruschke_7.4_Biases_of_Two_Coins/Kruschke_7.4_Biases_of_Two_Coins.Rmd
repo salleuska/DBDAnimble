@@ -1,0 +1,95 @@
+# Biases of Two Coins
+
+This is an example from Kruschke(2015)[^1], section 7.4. The model is implemented in JAGS in section 8.4. 
+
+The aim is to estimate the difference of biases between two coins (or subjects). The following data are provided. The column `y` contains the outcomes, with $1$ meaning heads and $0$ meaning tails. The column `s` contains the two coins' identifiers. Each subject (coin) corresponds to several trials (tosses).
+
+```{r}
+dataCoin <- read.csv('z6N8z2N7.csv')
+dataCoin
+```
+
+Suppose:
+
+$\theta_1$ is the probability for coin 1 to land head
+
+$\theta_2$ is the probability for coin 2 to land head
+
+We wish to estimate the distributions of the two parameters, $\theta_1$ and $\theta_2$, given the above data.
+
+## Exact posterior
+
+Suppose: 
+
+Coin 1 is tossed $N_1$ times and $z_1$ heads are observed.
+
+Coin 2 is tossed $N_2$ times, independent of coin 1, and $z_2$ heads are observed.
+
+Let $Data = D = \{z_1, N_1, z_2, N_2\}$.
+
+If we choose the prior distributions of $\theta_1$ and $\theta_2$ to be $beta(a_1, b_1)$ and $beta(a_2, b_2)$, respectively, the posterior joint distribution of $\theta_1$ and $\theta_2$ is shown to be $p(\theta_1, \theta_2 | D) = beta(\theta_1|z_1+a_1, N_1-z_1+b_1) \cdot beta(\theta_2|z_2+a_2, N_2-z_2+b_2)$
+
+## Using NIMBLE
+
+```{r}
+library(nimble)
+
+## modelCode
+coinCode <- nimbleCode({
+  for (i in 1:Nsubj){
+    theta[i] ~ dbeta(2, 2)    # prior distributions the two parameters
+  }
+	for (i in 1:Ntotal){
+		y[i] ~ dbern(prob = theta[s[i]])    # likelihoods of the outcomes based on the subjects 
+	}
+})
+
+## define additional information needed for the model
+## data 
+coinData <- list(y = dataCoin$y)
+
+## constants of the model (e.g. number of observations, fixed values)
+coinConsts <- list(s = as.numeric(dataCoin$s), Ntotal = nrow(dataCoin), Nsubj = length(unique(dataCoin$s)))
+
+## values to initialize the algorithm
+coinInits <- list(theta = c(0.5, 0.5))
+```
+ 
+```{r}
+## fast use of NIMBLE (one-line invocation)
+mcmc.out <- nimbleMCMC(code = coinCode, constants = coinConsts,
+						data = coinData, inits = coinInits,
+						niter = 5000, nburnin = 1000,
+						monitors = c('theta'))
+```
+
+The result is a matrix. Each row corresponds to one iteration, while each column corresponds to one parameter.
+
+```{r}
+head(mcmc.out)
+```
+
+One can plot the result.
+
+```{r}
+plot(mcmc.out, type = "p", main = "Posterior samples")
+```
+
+```{r}
+plot(mcmc.out[,1], type = "l", main = "Traceplot of theta1")
+lines(cumsum(mcmc.out[,1])/1:length(mcmc.out[,1]), col = "gold")
+```
+
+```{r}
+plot(mcmc.out[,2], type = "l", main = "Traceplot of theta2")
+lines(cumsum(mcmc.out[,2])/1:length(mcmc.out[,2]), col = "gold")
+```
+
+Marginal posterior distributions of $\theta_1$ and $\theta_2$
+  
+```{r}
+hist(mcmc.out[,'theta[1]'], main = "Marginal posterior of theta1", breaks = 100)
+hist(mcmc.out[,'theta[2]'], main = "Marginal posterior of theta2", breaks = 100)
+```
+
+[^1]: Kruschke, J.K.,2015. Doing Bayesian data analysis: a tutorial with R, JAGS, and stan. 2E [edition]. Academic Press.
