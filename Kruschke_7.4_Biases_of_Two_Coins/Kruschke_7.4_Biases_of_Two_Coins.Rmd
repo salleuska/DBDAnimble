@@ -1,3 +1,14 @@
+<!-- ---(begin DBDAnimble header)--- -->
+<!--  This file contains code adapted from the files Jags-Ydich-XnomSsubj-Mbernbeta.R -->
+<!--  available at https://sites.google.com/site/doingbayesiandataanalysis/software-installation with -->
+<!--  permission of the authors.  It may have been modified so that examples originally -->
+<!--  written to work with JAGS or WinBUGS will work with NIMBLE.  More information -->
+<!--  about NIMBLE can be found at https://r-nimble.org, https://github.com/nimble-dev/nimble, -->
+<!--  and https://cran.r-project.org/web/packages/nimble/index.html. -->
+<!--  This file was created by: -->
+<!--  Tianchi Liu, Sally Paganin-->
+<!-- ---(end DBDAnimble header)--- -->
+
 # Biases of Two Coins
 
 This is an example from Kruschke(2015)[^1], section 7.4. The model is implemented in JAGS in section 8.4. 
@@ -53,13 +64,19 @@ coinConsts <- list(s = as.numeric(dataCoin$s), Ntotal = nrow(dataCoin), Nsubj = 
 
 ## values to initialize the algorithm
 coinInits <- list(theta = c(0.5, 0.5))
+
 ```
  
 ```{r}
+
+nChains <- 1
+nBurnin <- 1000
+nIter <- 5000
+
 ## fast use of NIMBLE (one-line invocation)
 mcmc.out <- nimbleMCMC(code = coinCode, constants = coinConsts,
 						data = coinData, inits = coinInits,
-						niter = 5000, nburnin = 1000,
+						niter = nIter, nburnin = nBurnin, nchains = nChains,
 						monitors = c('theta'))
 ```
 
